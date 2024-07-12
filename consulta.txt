@@ -1,0 +1,3 @@
+npx create-nex-app -n template-next-front
+npm install -D tailwindcss@latest postcss@latest autoprefixer@latest
+npx tailwindcss init -p
