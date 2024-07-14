@@ -4,6 +4,8 @@ import { createContext, useEffect, useState } from 'react';
 import firebase from '../../firebase/config';
 import Usuario from '../../model/Usuatio';
 
+import { api, requestConfig } from "../../utils/config";
+
 interface AuthContextProps {
     usuario?: Usuario
     carregando?: boolean
@@ -57,25 +59,45 @@ export function AuthProvider(props) {
         }
     }
 
-    async function login(email, senha) {
+    async function login(email, password) {
+        const data = {
+            email,
+            password,
+          };
+        const config = requestConfig("POST", data);
+
         try {
-            setCarregando(true)
-            const resp = await firebase.auth().signInWithEmailAndPassword(email, senha)
-    
-            await configurarSessao(resp.user)
-            router.push('/')            
-        } finally {
-            setCarregando(false)
+            const res = await fetch(api + "/users/login", config)
+                .then((res) => res.json())
+                .catch((err) => err);
+
+            if (res._id) {
+                localStorage.setItem("user", JSON.stringify(res));
+                localStorage.setItem("token", JSON.stringify(res.token));
+            }
+            console.log(res)
+            return res;
+        } catch (error) {
+            console.log(error);
         }
+        // try {
+        //     setCarregando(true)
+        //     const resp = await firebase.auth().signInWithEmailAndPassword(email, senha)
+
+        //     await configurarSessao(resp.user)
+        //     router.push('/')            
+        // } finally {
+        //     setCarregando(false)
+        // }
     }
 
     async function cadastrar(email, senha) {
         try {
             setCarregando(true)
             const resp = await firebase.auth().createUserWithEmailAndPassword(email, senha)
-    
+
             await configurarSessao(resp.user)
-            router.push('/')            
+            router.push('/')
         } finally {
             setCarregando(false)
         }
@@ -87,32 +109,32 @@ export function AuthProvider(props) {
             const resp = await firebase.auth().signInWithPopup(
                 new firebase.auth.GoogleAuthProvider()
             )
-    
+
             await configurarSessao(resp.user)
-            router.push('/')            
+            router.push('/')
         } finally {
             setCarregando(false)
         }
     }
 
-    async function logout(){
+    async function logout() {
         try {
             setCarregando(true)
             await firebase.auth().signOut()
-            await configurarSessao(null)            
+            await configurarSessao(null)
         } finally {
             setCarregando(false)
         }
     }
 
-    useEffect(()=>{
-        if(Cookies.get('admin-template-auth')){
-            const cancelar = firebase.auth().onIdTokenChanged(configurarSessao)        
+    useEffect(() => {
+        if (Cookies.get('admin-template-auth')) {
+            const cancelar = firebase.auth().onIdTokenChanged(configurarSessao)
             return () => cancelar()
         } else {
             setCarregando(false)
         }
-    },[])
+    }, [])
 
     return (
         <AuthContext.Provider value={{
@@ -120,7 +142,7 @@ export function AuthProvider(props) {
             carregando,
             cadastrar,
             login,
-            loginGoogle, 
+            loginGoogle,
             logout
         }}>
             {props.children}

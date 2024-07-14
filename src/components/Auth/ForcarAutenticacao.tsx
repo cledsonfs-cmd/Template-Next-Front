@@ -16,7 +16,7 @@ export default function ForcarAutenticacao(props) {
     }
 
     function renderizarCarregando(){
-        return(
+        return(            
             <div className={`
                 flex justify-center items-center h-screen
             `}>
@@ -25,12 +25,12 @@ export default function ForcarAutenticacao(props) {
         )
     }
 
-    // if(!carregando && usuario?.email){
+    if(!carregando && usuario?.email){
         return renderizarConteudo()
-    // }else if(carregando){
-        // renderizarCarregando()
-    // }else{
-        // router.push('/autenticacao')
-        // return null
-    // }
+    }else if(carregando){
+        renderizarCarregando()
+    }else{       
+        router.push('/autenticacao')
+        return null
+    }
 }
