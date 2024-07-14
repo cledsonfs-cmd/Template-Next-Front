@@ -1,9 +1,9 @@
-import Head from "next/head";
 import Layout from "../components/template/Layout";
-import type { NextPage } from "next";
 
-const Home: NextPage = () => {
-  return <Layout titulo="Página Inicial" subtitulo="xxxxx"></Layout>;
-};
-
-export default Home;
+export default function Home() {
+  return (
+    <Layout titulo="Pagina Inicial" subtitulo="em construção">
+      <h3>Conteudo</h3>
+    </Layout>
+  )
+}

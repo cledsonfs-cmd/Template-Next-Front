@@ -1,13 +1,21 @@
 interface TituloProps {
-  titulo: string;
-  subtitulo: string;
+    titulo: string
+    subtitulo: string
 }
 
 export default function Titulo(props: TituloProps) {
-  return (
-    <div>
-      <h1 className={``}>{props.titulo}</h1>
-      <h1 className={``}>{props.subtitulo}</h1>
-    </div>
-  );
+    return (
+        <div>
+            <h1 className={`
+            font-black text-3xl text-gray-900 dark:text-gray-100
+            `}>
+                {props.titulo}
+            </h1>
+            <h2 className={`
+                font-light text-sm text-gray-600 dark:text-gray-300
+            `}>
+                {props.subtitulo}
+            </h2>
+        </div>
+    )
 }
