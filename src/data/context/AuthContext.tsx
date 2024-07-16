@@ -9,7 +9,7 @@ import router from "next/router";
 interface AuthContextProps {
   usuario?: Usuario;
   carregando?: boolean;
-  cadastrar?: (email: string, senha: string) => Promise<void>;
+  cadastrar?: (email: string, password: string, nome: string, role: string) => Promise<void>;
   login?: (email: string, senha: string) => Promise<void>;
   loginGoogle?: () => Promise<void>;
   logout?: () => Promise<void>;
@@ -73,41 +73,24 @@ export function AuthProvider(props) {
       router.push("/");
     } finally {
       setCarregando(false);
-    }
-
-    // try {
-    //         const res = await fetch(api + "/users/login", config)
-    //             .then((res) => res.json())
-    //             .catch((err) => err);
-
-    //         if (res._id) {
-    //             localStorage.setItem("user", JSON.stringify(res));
-    //             localStorage.setItem("token", JSON.stringify(res.token));
-    //         }
-    //         console.log(res)
-    //         return res;
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // try {
-    //     setCarregando(true)
-    //     const resp = await firebase.auth().signInWithEmailAndPassword(email, senha)
-
-    //     await configurarSessao(resp.user)
-    //     router.push('/')
-    // } finally {
-    //     setCarregando(false)
-    // }
+    }    
   }
 
-  async function cadastrar(email, senha) {
+  async function cadastrar(email, password, nome, role) {
     try {
-      setCarregando(true);
-      const resp = null; //= await firebase
-      //   .auth()
-      //   .createUserWithEmailAndPassword(email, senha);
-
-      await configurarSessao(resp);
+      const data = {
+        email,
+        nome,
+        password,
+        idstatus: 1,
+        role
+      };
+      const config = requestConfig("POST", data);
+      setCarregando(true);      
+      const res = await fetch(api + "/users", config)
+        .then((res) => res.json())
+        .catch((err) => err);
+      await configurarSessao(res);
       router.push("/");
     } finally {
       setCarregando(false);
@@ -118,6 +101,7 @@ export function AuthProvider(props) {
     try {
       setCarregando(true);
       const resp = null;
+      
       // await firebase
       // .auth()
       // .signInWithPopup(new firebase.auth.GoogleAuthProvider());
@@ -131,8 +115,9 @@ export function AuthProvider(props) {
 
   async function logout() {
     try {
-      setCarregando(true);
+      setCarregando(true);    
       //await firebase.auth().signOut();
+      console.log(usuario)
       await configurarSessao(null);
     } finally {
       setCarregando(false);
@@ -140,12 +125,12 @@ export function AuthProvider(props) {
   }
 
   useEffect(() => {
-    if (Cookies.get("admin-template-auth")) {
-      const cancelar = null; //firebase.auth().onIdTokenChanged(configurarSessao);
-      return () => cancelar();
-    } else {
+    //if (Cookies.get("admin-template-auth")) {
+     // const cancelar = null; //firebase.auth().onIdTokenChanged(configurarSessao);
+     // return () => cancelar();
+    //} else {
       setCarregando(false);
-    }
+    //}
   }, []);
 
   return (
