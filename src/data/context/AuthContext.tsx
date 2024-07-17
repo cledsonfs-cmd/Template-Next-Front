@@ -6,6 +6,7 @@ import Cookies from "js-cookie";
 import Usuario from "../../model/Usuatio";
 import router from "next/router";
 
+
 interface AuthContextProps {
   usuario?: Usuario;
   carregando?: boolean;
@@ -13,6 +14,21 @@ interface AuthContextProps {
   login?: (email: string, senha: string) => Promise<void>;
   loginGoogle?: () => Promise<void>;
   logout?: () => Promise<void>;
+}
+
+interface ErrorRetorno{
+  status: string,
+  error: any,
+  timestamp: any
+}
+
+function errorNormalizado(errorAPI: ErrorRetorno){
+  console.log(errorAPI.status)
+  return {
+    status: errorAPI.status,
+    error: errorAPI.error,
+    timestamp: errorAPI.timestamp
+  }
 }
 
 const AuthContext = createContext<AuthContextProps>({});
@@ -64,16 +80,22 @@ export function AuthProvider(props) {
       password,
     };
     const config = requestConfig("POST", data);
-    try {
       setCarregando(true);
       const res = await fetch(api + "/users/login", config)
-        .then((res) => res.json())
-        .catch((err) => err);
-      await configurarSessao(res);
-      router.push("/");
-    } finally {
-      setCarregando(false);
-    }    
+        .then(res => {
+          if (!res.ok) {
+            return res.text().then(text => { throw new Error(text) })
+          }
+          else {
+            configurarSessao(res);
+            router.push("/");           
+          }
+        })
+        .catch(err=> 
+          {
+          setCarregando(false);                    
+          throw new Error(err);
+        });
   }
 
   async function cadastrar(email, password, nome, role) {
@@ -86,7 +108,7 @@ export function AuthProvider(props) {
         role
       };
       const config = requestConfig("POST", data);
-      setCarregando(true);      
+      setCarregando(true);
       const res = await fetch(api + "/users", config)
         .then((res) => res.json())
         .catch((err) => err);
@@ -101,7 +123,7 @@ export function AuthProvider(props) {
     try {
       setCarregando(true);
       const resp = null;
-      
+
       // await firebase
       // .auth()
       // .signInWithPopup(new firebase.auth.GoogleAuthProvider());
@@ -115,7 +137,7 @@ export function AuthProvider(props) {
 
   async function logout() {
     try {
-      setCarregando(true);    
+      setCarregando(true);
       //await firebase.auth().signOut();
       console.log(usuario)
       await configurarSessao(null);
@@ -126,10 +148,10 @@ export function AuthProvider(props) {
 
   useEffect(() => {
     //if (Cookies.get("admin-template-auth")) {
-     // const cancelar = null; //firebase.auth().onIdTokenChanged(configurarSessao);
-     // return () => cancelar();
+    // const cancelar = null; //firebase.auth().onIdTokenChanged(configurarSessao);
+    // return () => cancelar();
     //} else {
-      setCarregando(false);
+    setCarregando(false);
     //}
   }, []);
 
