@@ -6,29 +6,33 @@ import Cookies from "js-cookie";
 import Usuario from "../../model/Usuatio";
 import router from "next/router";
 
-
 interface AuthContextProps {
   usuario?: Usuario;
   carregando?: boolean;
-  cadastrar?: (email: string, password: string, nome: string, role: string) => Promise<void>;
+  cadastrar?: (
+    email: string,
+    password: string,
+    nome: string,
+    role: string
+  ) => Promise<void>;
   login?: (email: string, senha: string) => Promise<void>;
   loginGoogle?: () => Promise<void>;
   logout?: () => Promise<void>;
 }
 
-interface ErrorRetorno{
-  status: string,
-  error: any,
-  timestamp: any
+interface ErrorRetorno {
+  status: string;
+  error: any;
+  timestamp: any;
 }
 
-function errorNormalizado(errorAPI: ErrorRetorno){
-  console.log(errorAPI.status)
+function errorNormalizado(errorAPI: ErrorRetorno) {
+  console.log(errorAPI.status);
   return {
     status: errorAPI.status,
     error: errorAPI.error,
-    timestamp: errorAPI.timestamp
-  }
+    timestamp: errorAPI.timestamp,
+  };
 }
 
 const AuthContext = createContext<AuthContextProps>({});
@@ -80,43 +84,51 @@ export function AuthProvider(props) {
       password,
     };
     const config = requestConfig("POST", data);
-      setCarregando(true);
-      const res = await fetch(api + "/users/login", config)
-        .then(res => {
-          if (!res.ok) {
-            return res.text().then(text => { throw new Error(text) })
-          }
-          else {
-            configurarSessao(res);
-            router.push("/");           
-          }
-        })
-        .catch(err=> 
-          {
-          setCarregando(false);                    
-          throw new Error(err);
-        });
+    setCarregando(true);
+
+    fetch(api + "/users/login", config)
+      .then((response) => response.json())
+      .then((usuario) => {
+        configurarSessao(usuario);
+        router.push("/");
+      })
+      .catch((err) => {
+        console.log("aaaa");
+      });
   }
 
   async function cadastrar(email, password, nome, role) {
-    try {
-      const data = {
-        email,
-        nome,
-        password,
-        idstatus: 1,
-        role
-      };
-      const config = requestConfig("POST", data);
-      setCarregando(true);
-      const res = await fetch(api + "/users", config)
-        .then((res) => res.json())
-        .catch((err) => err);
-      await configurarSessao(res);
-      router.push("/");
-    } finally {
-      setCarregando(false);
-    }
+    const data = {
+      email,
+      nome,
+      password,
+      idstatus: 1,
+      role,
+    };
+    const config = requestConfig("POST", data);
+    setCarregando(true);
+
+    const res = await fetch(api + "/users", config)
+      .then((res) => {
+        if (!res.ok) {
+          return res.text().then((text) => {
+            throw new Error(text);
+          });
+        } else {
+          configurarSessao(res);
+          router.push("/");
+        }
+      })
+      .catch((err) => {
+        setCarregando(false);
+        throw new Error(err);
+      });
+
+    //   const res = await fetch(api + "/users", config)
+    //     .then((res) => res.json())
+    //     .catch((err) => err);
+    //   await configurarSessao(res);
+    // router.push("/");
   }
 
   async function loginGoogle() {
@@ -139,7 +151,7 @@ export function AuthProvider(props) {
     try {
       setCarregando(true);
       //await firebase.auth().signOut();
-      console.log(usuario)
+      console.log(usuario);
       await configurarSessao(null);
     } finally {
       setCarregando(false);
