@@ -85,16 +85,16 @@ export function AuthProvider(props) {
     };
     const config = requestConfig("POST", data);
     setCarregando(true);
+      const response = await fetch(api + "/users/login", config)
+      .then((res)=>res.json());
 
-    fetch(api + "/users/login", config)
-      .then((response) => response.json())
-      .then((usuario) => {
-        configurarSessao(usuario);
+      if(response?.error){
+        setCarregando(false);
+        throw new Error(response.error);
+      }else{
+        configurarSessao(response);
         router.push("/");
-      })
-      .catch((err) => {
-        console.log("aaaa");
-      });
+      }      
   }
 
   async function cadastrar(email, password, nome, role) {
@@ -108,27 +108,16 @@ export function AuthProvider(props) {
     const config = requestConfig("POST", data);
     setCarregando(true);
 
-    const res = await fetch(api + "/users", config)
-      .then((res) => {
-        if (!res.ok) {
-          return res.text().then((text) => {
-            throw new Error(text);
-          });
-        } else {
-          configurarSessao(res);
-          router.push("/");
-        }
-      })
-      .catch((err) => {
-        setCarregando(false);
-        throw new Error(err);
-      });
+    const response = await fetch(api + "/users", config)
+      .then((res)=>res.json());
 
-    //   const res = await fetch(api + "/users", config)
-    //     .then((res) => res.json())
-    //     .catch((err) => err);
-    //   await configurarSessao(res);
-    // router.push("/");
+      if(response?.error){
+        setCarregando(false);
+        throw new Error(response.error);
+      }else{
+        configurarSessao(response);
+        router.push("/");
+      }      
   }
 
   async function loginGoogle() {
@@ -150,8 +139,6 @@ export function AuthProvider(props) {
   async function logout() {
     try {
       setCarregando(true);
-      //await firebase.auth().signOut();
-      console.log(usuario);
       await configurarSessao(null);
     } finally {
       setCarregando(false);
