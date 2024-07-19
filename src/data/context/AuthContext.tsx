@@ -2,7 +2,6 @@ import { api, requestConfig } from "../../utils/config";
 import { createContext, useEffect, useState } from "react";
 
 import Cookies from "js-cookie";
-//import firebase from "../../firebase/config";
 import Usuario from "../../model/Usuatio";
 import router from "next/router";
 
@@ -20,29 +19,15 @@ interface AuthContextProps {
   logout?: () => Promise<void>;
 }
 
-interface ErrorRetorno {
-  status: string;
-  error: any;
-  timestamp: any;
-}
-
-function errorNormalizado(errorAPI: ErrorRetorno) {
-  console.log(errorAPI.status);
-  return {
-    status: errorAPI.status,
-    error: errorAPI.error,
-    timestamp: errorAPI.timestamp,
-  };
-}
-
 const AuthContext = createContext<AuthContextProps>({});
 
 async function usuarioNormalizado(usuarioAPI: any): Promise<Usuario> {
   const token = await usuarioAPI?.token.token;
   return {
     uid: usuarioAPI.uid,
-    nome: usuarioAPI.displayName,
+    nome: usuarioAPI.nome,
     email: usuarioAPI.email,
+    role: usuarioAPI.role,
     token,
     provedor: "teste",
     imagemUrl: usuarioAPI.imageUrl,
@@ -69,8 +54,14 @@ export function AuthProvider(props) {
       setUsuario(usuario);
       gerenciarCookie(true);
       setCarregando(false);
+      localStorage.setItem("token", usuario.token);
+      localStorage.setItem("usuario", usuario.nome);
+      localStorage.setItem("role", usuario.role);
       return usuario.email;
     } else {
+      localStorage.removeItem("token");
+      localStorage.removeItem("usuario");
+      localStorage.removeItem("role");
       setUsuario(null);
       gerenciarCookie(false);
       setCarregando(false);
@@ -85,16 +76,17 @@ export function AuthProvider(props) {
     };
     const config = requestConfig("POST", data);
     setCarregando(true);
-      const response = await fetch(api + "/users/login", config)
-      .then((res)=>res.json());
+    const response = await fetch(api + "/users/login", config).then((res) =>
+      res.json()
+    );
 
-      if(response?.error){
-        setCarregando(false);
-        throw new Error(response.error);
-      }else{
-        configurarSessao(response);
-        router.push("/");
-      }      
+    if (response?.error) {
+      setCarregando(false);
+      throw new Error(response.error);
+    } else {
+      configurarSessao(response);
+      router.push("/");
+    }
   }
 
   async function cadastrar(email, password, nome, role) {
@@ -108,16 +100,17 @@ export function AuthProvider(props) {
     const config = requestConfig("POST", data);
     setCarregando(true);
 
-    const response = await fetch(api + "/users", config)
-      .then((res)=>res.json());
+    const response = await fetch(api + "/users", config).then((res) =>
+      res.json()
+    );
 
-      if(response?.error){
-        setCarregando(false);
-        throw new Error(response.error);
-      }else{
-        configurarSessao(response);
-        router.push("/");
-      }      
+    if (response?.error) {
+      setCarregando(false);
+      throw new Error(response.error);
+    } else {
+      configurarSessao(response);
+      router.push("/");
+    }
   }
 
   async function loginGoogle() {
