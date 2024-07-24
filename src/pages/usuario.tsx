@@ -1,8 +1,18 @@
-import Layout from "../components/Layout";
+import { useDispatch, useSelector } from "react-redux";
+
+import Layout from "../components/template/Layout";
+import { listar } from "../slices/userSlice";
+import { useEffect } from "react";
 
 export default function Usuario() {
+  const dispatch = useDispatch();
+  const { users } = useSelector((state) => state.user);
+
+  useEffect(() => {
+    dispatch(listar());
+  }, []);
   return (
-    <Layout titulo="Usuários" subtitulo="Usuários Cadastrados">
+    <Layout titulo="Usuarios" subtitulo="Usuários Cadastrados">
       <div className="w-3/4">
         <div className="table w-full">
           <div className="table-header-group ...">
@@ -14,14 +24,16 @@ export default function Usuario() {
             </div>
           </div>
           <div className="table-row-group">
-            <div className="table-row">
-              <div className="table-cell ...">1</div>
-              <div className="table-cell ...">
-                The Sliding Mr. Bones (Next Stop, Pottersville)
-              </div>
-              <div className="table-cell ...">Malcolm Lockyer</div>
-              <div className="table-cell ...">1961</div>
-            </div>
+            {users
+              ? users.map((usuario) => (
+                  <div className="table-row">
+                    <div className="table-cell ...">{usuario?.uid}</div>
+                    <div className="table-cell ...">{usuario?.nome}</div>
+                    <div className="table-cell ...">{usuario?.email}</div>
+                    <div className="table-cell ...">{usuario?.role.name}</div>
+                  </div>
+                ))
+              : null}
           </div>
         </div>
       </div>

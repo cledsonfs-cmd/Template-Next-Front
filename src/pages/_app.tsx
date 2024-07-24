@@ -1,12 +1,22 @@
-import "@/styles/globals.css";
+import "../styles/globals.css";
+import "tailwindcss/tailwind.css";
 
-import type { AppProps } from "next/app";
-import { AppProvider } from "@/context/AppContext";
+import { AppProvider } from "../data/context/AppContext";
+import { AuthProvider } from "../data/context/AuthContext";
+//Redux
+import { Provider } from "react-redux";
+import { store } from "../store";
 
-export default function App({ Component, pageProps }: AppProps) {
+function MyApp({ Component, pageProps }) {
   return (
-    <AppProvider>
-      <Component {...pageProps} />
-    </AppProvider>
+    <Provider store={store}>
+      <AuthProvider>
+        <AppProvider>
+          <Component {...pageProps} />
+        </AppProvider>
+      </AuthProvider>
+    </Provider>
   );
 }
+
+export default MyApp;

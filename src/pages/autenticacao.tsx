@@ -1,9 +1,11 @@
-import AuthInput from "@/components/Auth/AuthInput";
-import { IconeAtencao } from "@/icons";
-import Logo from "@/components/Logo";
+import AuthInput from "../components/Auth/AuthInput";
+import { IconeAtencao } from "../components/icons";
+import useAuth from "../data/hook/useAuth";
 import { useState } from "react";
 
 export default function Autenticacao() {
+  const { cadastrar, login } = useAuth();
+
   const [modo, setModo] = useState<"login" | "cadastro">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,9 +21,9 @@ export default function Autenticacao() {
   async function submeter() {
     try {
       if (modo === "login") {
-        //     await login(email, password);
+        await login(email, password);
       } else {
-        //    await cadastrar(email, password, nome, role);
+        await cadastrar(email, password, nome, role);
       }
     } catch (e) {
       exibirErro(e?.message ?? "Erro desconhecido!");
@@ -37,9 +39,7 @@ export default function Autenticacao() {
   }
 
   return (
-    <div
-      className={`bg-white text-black flex h-screen items-center justify-center`}
-    >
+    <div className="flex h-screen items-center justify-center">
       <div className="hidden md:block md:w-1/2 lg:w-2/3">
         <img
           src="https://random.imagecdn.app/800/600"
@@ -48,9 +48,6 @@ export default function Autenticacao() {
         />
       </div>
       <div className="m-10 w-full md:w-1/2 lg:w-1/3">
-        <center className={`mb-7 w-30 h-30`}>
-          <Logo />
-        </center>
         <h1 className={`text-3xl font-bold mb-5 `}>
           {modo === "login"
             ? "Entre com Sua Conta"
@@ -93,7 +90,6 @@ export default function Autenticacao() {
           obrigatorio
           naoRenderizarQuando={modo === "login"}
         />
-
         {modo === "cadastro" ? (
           <div className="flex flex-col mt-4">
             <label>Role</label>
@@ -124,6 +120,12 @@ export default function Autenticacao() {
 
         <hr className="my-6 border-gray-300 w-full" />
 
+        {/* <button onClick={loginGoogle} className={`
+                w-full bg-red-500 hover:bg-red-400
+                text-white rounded-lg px-4 py-3
+                `}>
+                    Entrar com o Google
+                </button> */}
         {modo === "login" ? (
           <p className="mt-8">
             Novo por aqui?
