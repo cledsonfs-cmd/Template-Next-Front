@@ -135,7 +135,15 @@ export function AuthProvider(props) {
   async function logout() {
     try {
       setCarregando(true);
-      await configurarSessao(null);
+      const token = localStorage.getItem("token");
+      
+      const config = requestConfig("POST", null,token);
+      
+      const response = await fetch(api + "/users/logout", config).then((res) =>
+        res.text
+      );      
+      await configurarSessao(null);      
+      
     } finally {
       setCarregando(false);
     }
