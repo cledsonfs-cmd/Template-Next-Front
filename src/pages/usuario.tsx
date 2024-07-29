@@ -25,12 +25,14 @@ export default function Usuario() {
           </div>
           <div className="table-row-group">
             {users
-              ? users.map((usuario) => (
+              ? users?.map((usuario) => (
                   <div className="table-row">
                     <div className="table-cell ...">{usuario?.uid}</div>
                     <div className="table-cell ...">{usuario?.nome}</div>
                     <div className="table-cell ...">{usuario?.email}</div>
-                    <div className="table-cell ...">{usuario?.role.name}</div>
+                    <div className="table-cell ...">
+                      {usuario?.role.name ? usuario?.role.name : usuario?.role}
+                    </div>
                   </div>
                 ))
               : null}

@@ -141,10 +141,10 @@ export function AuthProvider(props) {
     }
   }
 
-  async function listar() {    
-    const token = localStorage.getItem('token')
+  async function listar() {
+    const token = localStorage.getItem("token");
     const config = requestConfig("GET", null, token);
-  
+
     try {
       const response = await fetch(api + "/users/all", config).then((res) =>
         res.json()
@@ -152,15 +152,13 @@ export function AuthProvider(props) {
       if (response?.error) {
         setUsuarios([]);
         throw new Error(response.error);
-      } else {        
+      } else {
         setUsuarios(response);
       }
-  
     } catch (error) {
       console.log(error);
     }
   }
-
 
   useEffect(() => {
     //if (Cookies.get("admin-template-auth")) {

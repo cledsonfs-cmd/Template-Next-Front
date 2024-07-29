@@ -8,6 +8,7 @@ const listar = async (token) => {
     const res = await fetch(api + "/users/all", config)
       .then((res) => res.json())
       .catch((err) => err);
+    console.log(res);
     return res;
   } catch (error) {
     console.log(error);
