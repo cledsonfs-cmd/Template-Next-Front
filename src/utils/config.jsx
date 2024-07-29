@@ -3,7 +3,7 @@ export const api = "http://localhost:8080"
 export const requestConfig = (method, data, token = null) => {
     let config;
   
-    if (method === "DELETE" || data === null) {
+    if (method === "DELETE" || data === null) {      
       config = {
         method: method,
         headers: {},
