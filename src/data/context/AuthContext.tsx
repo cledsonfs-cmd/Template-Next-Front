@@ -79,7 +79,7 @@ export function AuthProvider(props) {
     };
     const config = requestConfig("POST", data);
     setCarregando(true);
-    const response = await fetch(api + "/users/login", config).then((res) =>
+    const response = await fetch(api + "/login", config).then((res) =>
       res.json()
     );
 
@@ -103,7 +103,7 @@ export function AuthProvider(props) {
     const config = requestConfig("POST", data);
     setCarregando(true);
 
-    const response = await fetch(api + "/users", config).then((res) =>
+    const response = await fetch(api + "/register", config).then((res) =>
       res.json()
     );
 
@@ -136,14 +136,13 @@ export function AuthProvider(props) {
     try {
       setCarregando(true);
       const token = localStorage.getItem("token");
-      
-      const config = requestConfig("POST", null,token);
-      
-      const response = await fetch(api + "/users/logout", config).then((res) =>
-        res.text
-      );      
-      await configurarSessao(null);      
-      
+
+      const config = requestConfig("POST", null, token);
+
+      const response = await fetch(api + "/users/logout", config).then(
+        (res) => res.text
+      );
+      await configurarSessao(null);
     } finally {
       setCarregando(false);
     }
